@@ -1,0 +1,23 @@
+{
+    "name": "stylelint-core-vars",
+    "version": "1.0.0",
+    "description": "core-components css linter",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "reme3d2y",
+    "license": "ISC",
+    "devDependencies": {
+        "@alfalab/core-components": "^5.10.0",
+        "jest": "^26.6.3",
+        "jest-preset-stylelint": "^3.0.0",
+        "stylelint": "^13.8.0"
+    },
+    "jest": {
+        "preset": "jest-preset-stylelint",
+        "setupFiles": [
+            "./jest.setup.js"
+        ]
+    }
+}
