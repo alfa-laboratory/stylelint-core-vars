@@ -56,7 +56,7 @@ function coreComponentsInstalled() {
 
 function runInsideCoreComponents() {
     try {
-        const rootPackage = require(path.join(__dirname, '../../package.json'));
+        const rootPackage = require(path.join(__dirname, '../../../package.json'));
         return rootPackage.name === CORE_COMPONENTS_PACKAGE;
     } catch (e) {
         console.log(e);
@@ -68,7 +68,7 @@ function resolveVarsFile(file) {
     if (coreComponentsInstalled()) {
         return fs.readFileSync(require.resolve(`${CORE_COMPONENTS_PACKAGE}/vars/${file}`));
     } else {
-        return fs.readFileSync(path.resolve(__dirname, `../../packages/vars/src/${file}`));
+        return fs.readFileSync(path.resolve(__dirname, `../../../packages/vars/src/${file}`));
     }
 }
 
