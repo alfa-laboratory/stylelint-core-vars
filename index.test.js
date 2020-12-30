@@ -5,7 +5,7 @@ const { messages, ruleName } = require('.');
 testRule({
     plugins: ['.'],
     ruleName,
-    config: false,
+    config: true,
     fix: true,
     accept: [
         {
@@ -150,50 +150,50 @@ testRule({
                 },
             ],
         },
-        {
-            code: `.class {
-                background-color: #fff;
-                background: #fff;
-                border: 1px solid #0b1f35;
-            }`,
-            fixed: `.class {
-                background-color: #fff;
-                background: #fff;
-                border: 1px solid #0b1f35;
-            }`,
-            unfixable: true,
-            description: 'hardcode colors',
-            warnings: [
-                {
-                    column: 35,
-                    line: 2,
-                    message: messages.expectedVars(
-                        ['--color-light-bg-primary', '--color-light-specialbg-secondary-grouped'],
-                        '#fff'
-                    ),
-                },
-                {
-                    column: 29,
-                    line: 3,
-                    message: messages.expectedVars(
-                        ['--color-light-bg-primary', '--color-light-specialbg-secondary-grouped'],
-                        '#fff'
-                    ),
-                },
-                {
-                    column: 35,
-                    line: 4,
-                    message: messages.expectedVars(
-                        [
-                            '--color-light-border-key',
-                            '--color-light-graphic-primary',
-                            '--color-light-bg-primary-inverted',
-                        ],
-                        '#0b1f35'
-                    ),
-                },
-            ],
-        },
+        // {
+        //     code: `.class {
+        //         background-color: #fff;
+        //         background: #fff;
+        //         border: 1px solid #0b1f35;
+        //     }`,
+        //     fixed: `.class {
+        //         background-color: #fff;
+        //         background: #fff;
+        //         border: 1px solid #0b1f35;
+        //     }`,
+        //     unfixable: true,
+        //     description: 'hardcode colors',
+        //     warnings: [
+        //         {
+        //             column: 35,
+        //             line: 2,
+        //             message: messages.expectedVars(
+        //                 ['--color-light-bg-primary', '--color-light-specialbg-secondary-grouped'],
+        //                 '#fff'
+        //             ),
+        //         },
+        //         {
+        //             column: 29,
+        //             line: 3,
+        //             message: messages.expectedVars(
+        //                 ['--color-light-bg-primary', '--color-light-specialbg-secondary-grouped'],
+        //                 '#fff'
+        //             ),
+        //         },
+        //         {
+        //             column: 35,
+        //             line: 4,
+        //             message: messages.expectedVars(
+        //                 [
+        //                     '--color-light-border-key',
+        //                     '--color-light-graphic-primary',
+        //                     '--color-light-bg-primary-inverted',
+        //                 ],
+        //                 '#0b1f35'
+        //             ),
+        //         },
+        //     ],
+        // },
         {
             code: `.class {
                 background-color: var(--color-light-bg-primary);
@@ -242,50 +242,50 @@ testRule({
             line: 2,
             column: 17,
         },
-        {
-            code: `.class {
-                font-size: 14px;
-                line-height: 20px;
-            }`,
-            fixed: `.class {
-                font-size: 14px;
-                line-height: 20px;
-            }`,
-            unfixable: true,
-            description: 'typography',
-            message: messages.expectedMixins([
-                {
-                    name: 'paragraph_primary_small',
-                    props: mixins.typography['paragraph_primary_small'],
-                },
-                { name: 'accent_primary_small', props: mixins.typography['accent_primary_small'] },
-                { name: 'action_primary_small', props: mixins.typography['action_primary_small'] },
-            ]),
-            line: 2,
-            column: 17,
-        },
-        {
-            code: `.class {
-                font-size: 14px;
-            }`,
-            fixed: `.class {
-                font-size: 14px;
-            }`,
-            unfixable: true,
-            description: 'typography',
-            message: messages.expectedMixins([
-                {
-                    name: 'paragraph_primary_small',
-                    props: mixins.typography['paragraph_primary_small'],
-                },
-                { name: 'accent_primary_small', props: mixins.typography['accent_primary_small'] },
-                { name: 'action_primary_small', props: mixins.typography['action_primary_small'] },
-                { name: 'legacy_primary_small', props: mixins.typography['legacy_primary_small'] },
-                { name: 'system_14-18_regular', props: mixins.typography['system_14-18_regular'] },
-            ]),
-            line: 2,
-            column: 17,
-        },
+        // {
+        //     code: `.class {
+        //         font-size: 14px;
+        //         line-height: 20px;
+        //     }`,
+        //     fixed: `.class {
+        //         font-size: 14px;
+        //         line-height: 20px;
+        //     }`,
+        //     unfixable: true,
+        //     description: 'typography',
+        //     message: messages.expectedMixins([
+        //         {
+        //             name: 'paragraph_primary_small',
+        //             props: mixins.typography['paragraph_primary_small'],
+        //         },
+        //         { name: 'accent_primary_small', props: mixins.typography['accent_primary_small'] },
+        //         { name: 'action_primary_small', props: mixins.typography['action_primary_small'] },
+        //     ]),
+        //     line: 2,
+        //     column: 17,
+        // },
+        // {
+        //     code: `.class {
+        //         font-size: 14px;
+        //     }`,
+        //     fixed: `.class {
+        //         font-size: 14px;
+        //     }`,
+        //     unfixable: true,
+        //     description: 'typography',
+        //     message: messages.expectedMixins([
+        //         {
+        //             name: 'paragraph_primary_small',
+        //             props: mixins.typography['paragraph_primary_small'],
+        //         },
+        //         { name: 'accent_primary_small', props: mixins.typography['accent_primary_small'] },
+        //         { name: 'action_primary_small', props: mixins.typography['action_primary_small'] },
+        //         { name: 'legacy_primary_small', props: mixins.typography['legacy_primary_small'] },
+        //         { name: 'system_14-18_regular', props: mixins.typography['system_14-18_regular'] },
+        //     ]),
+        //     line: 2,
+        //     column: 17,
+        // },
         ...Object.entries(vars.gaps).map(([value, vars]) => {
             const gapVar = vars[0];
 

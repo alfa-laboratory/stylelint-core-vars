@@ -3,6 +3,7 @@ const toOneLine = require('./utils').toOneLine;
 const formatVar = require('./utils').formatVar;
 const findVar = require('./utils').findVar;
 const findTypographyMixin = require('./utils').findTypographyMixin;
+const VARS_AVAILABLE = require('./utils').VARS_AVAILABLE;
 
 const ruleName = 'stylelint-core-vars/use-vars';
 
@@ -53,7 +54,7 @@ const checkVars = (decl, result, context) => {
 
         const messageTemplate = exactVar ? messages.expectedVar : messages.expectedVars;
 
-        if (!fixed) {
+        if (!fixed && exactVar) {
             stylelint.utils.report({
                 result,
                 ruleName,
@@ -114,19 +115,25 @@ const checkTypography = (rule, result, context) => {
                 index: 0,
             });
         } else {
-            stylelint.utils.report({
-                result,
-                ruleName,
-                message: messages.expectedMixins(mixin),
-                node: rule,
-                word: 'font-size',
-                index: 0,
-            });
+            // stylelint.utils.report({
+            //     result,
+            //     ruleName,
+            //     message: messages.expectedMixins(mixin),
+            //     node: rule,
+            //     word: 'font-size',
+            //     index: 0,
+            // });
         }
     }
 };
 
-module.exports = stylelint.createPlugin(ruleName, (_, _2, context) => {
+module.exports = stylelint.createPlugin(ruleName, (enabled, _, context) => {
+    if (!enabled || !VARS_AVAILABLE) {
+        return function () {
+            return;
+        };
+    }
+
     return (root, result) => {
         root.walkRules((rule) => {
             checkTypography(rule, result, context);

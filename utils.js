@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const CORE_COMPONENTS_PACKAGE = '@alfalab/core-components';
 const VAR_RE = /(?:^|\n)\s+(--[-\w]+):\s*([\s\S]+?);/gm;
@@ -42,19 +43,52 @@ const varsByProperties = {
     'border-left': vars.colors,
 };
 
+const VARS_AVAILABLE = coreComponentsInstalled() || runInsideCoreComponents();
+
+function coreComponentsInstalled() {
+    try {
+        require.resolve(`${CORE_COMPONENTS_PACKAGE}/package.json`);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+function runInsideCoreComponents() {
+    try {
+        const rootPackage = require(path.join(__dirname, '../../package.json'));
+        return rootPackage.name === CORE_COMPONENTS_PACKAGE;
+    } catch (e) {
+        console.log(e);
+        return false;
+    }
+}
+
+function resolveVarsFile(file) {
+    if (coreComponentsInstalled()) {
+        return fs.readFileSync(require.resolve(`${CORE_COMPONENTS_PACKAGE}/vars/${file}`));
+    } else {
+        return fs.readFileSync(path.resolve(__dirname, `../../packages/vars/src/${file}`));
+    }
+}
+
 function loadVars(file) {
     const result = {};
 
-    const css = fs.readFileSync(require.resolve(`${CORE_COMPONENTS_PACKAGE}/vars/${file}`));
+    try {
+        const css = resolveVarsFile(file);
 
-    while ((match = VAR_RE.exec(css)) !== null) {
-        const value = toOneLine(match[2]);
+        while ((match = VAR_RE.exec(css)) !== null) {
+            const value = toOneLine(match[2]);
 
-        if (!result[value]) {
-            result[value] = [];
+            if (!result[value]) {
+                result[value] = [];
+            }
+
+            result[value].push(match[1]);
         }
-
-        result[value].push(match[1]);
+    } catch (e) {
+        console.error('Add @alfalab/core-components to project dependencies');
     }
 
     return result;
@@ -62,24 +96,27 @@ function loadVars(file) {
 
 function loadMixins(file) {
     const result = {};
-    const css = toOneLine(
-        fs.readFileSync(require.resolve(`${CORE_COMPONENTS_PACKAGE}/vars/${file}`)).toString()
-    );
 
-    while ((match = MIXIN_RE.exec(css)) !== null) {
-        const name = match[1];
+    try {
+        const css = toOneLine(resolveVarsFile(file).toString());
 
-        const decls = match[2]
-            .trim()
-            .split(';')
-            .filter((s) => s.trim())
-            .reduce((acc, decl) => {
-                const [prop, value] = decl.split(/:\s+/);
-                acc[prop.trim()] = value.trim();
-                return acc;
-            }, {});
+        while ((match = MIXIN_RE.exec(css)) !== null) {
+            const name = match[1];
 
-        result[name] = decls;
+            const decls = match[2]
+                .trim()
+                .split(';')
+                .filter((s) => s.trim())
+                .reduce((acc, decl) => {
+                    const [prop, value] = decl.split(/:\s+/);
+                    acc[prop.trim()] = value.trim();
+                    return acc;
+                }, {});
+
+            result[name] = decls;
+        }
+    } catch (e) {
+        console.error('Add @alfalab/core-components to project dependencies');
     }
 
     return result;
@@ -197,6 +234,7 @@ function sortVarsByUsage(arr, sortingArr) {
     });
 }
 
+module.exports.VARS_AVAILABLE = VARS_AVAILABLE;
 module.exports.vars = vars;
 module.exports.mixins = mixins;
 module.exports.findVar = findVar;
