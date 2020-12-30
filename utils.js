@@ -103,6 +103,14 @@ function loadMixins(file) {
         while ((match = MIXIN_RE.exec(css)) !== null) {
             const name = match[1];
 
+            if (
+                name.startsWith('system_') ||
+                name.startsWith('styrene_') ||
+                name.startsWith('legacy_')
+            ) {
+                continue;
+            }
+
             const decls = match[2]
                 .trim()
                 .split(';')
