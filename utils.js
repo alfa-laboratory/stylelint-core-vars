@@ -15,6 +15,7 @@ const vars = {
     gaps: loadVars('gaps.css'),
     shadows: loadVars('shadows-indigo.css'),
     colors: loadVars('colors-indigo.css'),
+    borderRadiuses: loadVars('border-radius.css'),
 };
 
 const mixins = {
@@ -41,6 +42,7 @@ const varsByProperties = {
     'border-right': vars.colors,
     'border-bottom': vars.colors,
     'border-left': vars.colors,
+    'border-radius': vars.borderRadiuses,
 };
 
 const VARS_AVAILABLE = coreComponentsInstalled() || runInsideCoreComponents();

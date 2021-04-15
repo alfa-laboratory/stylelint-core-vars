@@ -58,6 +58,17 @@ testRule({
         },
         {
             code: `.class {
+                border-radius: var(--border-radius-s);
+                border-radius: var(--border-radius-m);
+                border-radius: var(--border-radius-l);
+                border-radius: var(--border-radius-xl);
+                border-radius: var(--border-radius-circle);
+                border-radius: var(--border-radius-pill);
+            }`,
+            description: 'border-radius',
+        },
+        {
+            code: `.class {
                 @mixin headline_xlarge;
             }`,
             description: 'typography',
@@ -149,6 +160,14 @@ testRule({
                     column: 17,
                 },
             ],
+        },
+        {
+            code: `.class {\n    border-radius: 8px;\n}`,
+            fixed: `.class {\n    border-radius: var(--border-radius-m);\n}`,
+            description: 'hardcode border-radius',
+            message: messages.expectedVar('--border-radius-m', '8px'),
+            line: 2,
+            column: 20,
         },
         // {
         //     code: `.class {

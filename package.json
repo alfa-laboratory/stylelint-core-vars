@@ -4,12 +4,12 @@
     "description": "core-components css linter",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "jest"
     },
     "author": "reme3d2y",
     "license": "ISC",
     "devDependencies": {
-        "@alfalab/core-components": "^5.10.0",
+        "@alfalab/core-components": "^15.2.1",
         "jest": "^26.6.3",
         "jest-preset-stylelint": "^3.0.0",
         "stylelint": "^13.8.0"
