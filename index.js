@@ -54,7 +54,7 @@ const checkVars = (decl, result, context) => {
 
         const messageTemplate = exactVar ? messages.expectedVar : messages.expectedVars;
 
-        if (!fixed && exactVar) {
+        if (!fixed) {
             stylelint.utils.report({
                 result,
                 ruleName,
@@ -115,14 +115,14 @@ const checkTypography = (rule, result, context) => {
                 index: 0,
             });
         } else {
-            // stylelint.utils.report({
-            //     result,
-            //     ruleName,
-            //     message: messages.expectedMixins(mixin),
-            //     node: rule,
-            //     word: 'font-size',
-            //     index: 0,
-            // });
+            stylelint.utils.report({
+                result,
+                ruleName,
+                message: messages.expectedMixins(mixin),
+                node: rule,
+                word: 'font-size',
+                index: 0,
+            });
         }
     }
 };
