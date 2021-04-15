@@ -221,7 +221,8 @@ function findTypographyMixin(ruleProps) {
     if (exact.length) {
         return exact[0];
     } else {
-        return findMixin(false);
+        const mixins = findMixin(false);
+        return mixins.length > 0 ? mixins : null;
     }
 }
 

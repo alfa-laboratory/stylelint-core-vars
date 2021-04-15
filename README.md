@@ -9,7 +9,9 @@
 ```
 yarn add --dev stylelint stylelint-core-vars
 ```
+
 или
+
 ```
 npm install --save-dev stylelint stylelint-core-vars
 ```
@@ -24,7 +26,20 @@ npm install --save-dev stylelint stylelint-core-vars
     "@alfalab/stylelint-core-vars"
   ],
   "rules": {
-    "stylelint-core-vars/use-vars": true
-  }
+      "stylelint-core-vars/use-vars": true,
+      "stylelint-core-vars/use-mixins": true,
+      "stylelint-core-vars/use-one-of-vars": [
+          true,
+          {
+              "severity": "warning"
+          }
+      ],
+      "stylelint-core-vars/use-one-of-mixins": [
+          true,
+          {
+              "severity": "warning"
+          }
+      ]
+  },
 }
 ```
