@@ -1,8 +1,8 @@
 const stylelint = require('stylelint');
 const toOneLine = require('./utils').toOneLine;
 const formatVar = require('./utils').formatVar;
-const findVar = require('./utils').findVar;
-const findTypographyMixin = require('./utils').findTypographyMixin;
+const findVars = require('./utils').findVars;
+const findTypographyMixins = require('./utils').findTypographyMixins;
 const VARS_AVAILABLE = require('./utils').VARS_AVAILABLE;
 
 const RULE_USE_VARS = 'stylelint-core-vars/use-vars';
@@ -17,12 +17,8 @@ const messages = {
         },
     }),
     [RULE_USE_ONE_OF_VARS]: stylelint.utils.ruleMessages(RULE_USE_ONE_OF_VARS, {
-        expected: (variableOrVariables, value) => {
-            const variables = Array.isArray(variableOrVariables)
-                ? variableOrVariables
-                : [variableOrVariables];
-
-            const variablesPart = variables.map((v) => ` - ${v}`).join('\n');
+        expected: (variables, value) => {
+            const variablesPart = variables.map((v) => `${v}`).join('\n');
 
             return `Use variables instead of plain value '${value}':\n${variablesPart}\n`;
         },
@@ -33,11 +29,9 @@ const messages = {
         },
     }),
     [RULE_USE_ONE_OF_MIXINS]: stylelint.utils.ruleMessages(RULE_USE_ONE_OF_MIXINS, {
-        expected: (mixinOrMixins) => {
-            const mixins = Array.isArray(mixinOrMixins) ? mixinOrMixins : [mixinOrMixins];
-
+        expected: (mixins) => {
             const mixinsPart = mixins
-                .map(({ name, props }) => ` - ${name} (${Object.values(props).join('|')})`)
+                .map(({ name, props }) => `${name} (${Object.values(props).join('|')})`)
                 .join('\n');
             return `Use mixins instead of plain values:\n${mixinsPart}\n`;
         },
@@ -52,11 +46,11 @@ const checkVars = (decl, result, context, ruleName) => {
     let substitution;
     const previousValues = [];
 
-    while ((substitution = findVar(value, prop))) {
+    while ((substitution = findVars(value, prop))) {
         let fixed = false;
 
-        const exactVar = Array.isArray(substitution.variable) === false;
-        const fixedValue = formatVar(exactVar ? substitution.variable : substitution.variable[0]);
+        const exactVar = substitution.variables.length === 1;
+        const fixedValue = formatVar(substitution.variables[0]);
 
         value = value.replace(substitution.value, fixedValue);
 
@@ -70,13 +64,16 @@ const checkVars = (decl, result, context, ruleName) => {
             substitution.index
         );
 
-        const shouldReport = !fixed && (ruleName === RULE_USE_ONE_OF_VARS || exactVar);
+        const shouldReport =
+            !fixed &&
+            ((ruleName === RULE_USE_ONE_OF_VARS && !exactVar) ||
+                (ruleName === RULE_USE_VARS && exactVar));
 
         if (shouldReport) {
             stylelint.utils.report({
                 result,
                 ruleName,
-                message: messages[ruleName].expected(substitution.variable, substitution.value),
+                message: messages[ruleName].expected(substitution.variables, substitution.value),
                 node: decl,
                 word: value,
                 index: originalValueIndex + prop.length + raws.between.length,
@@ -101,16 +98,16 @@ const checkTypography = (rule, result, context, ruleName) => {
     const hasTypography = 'font-size' in typographyProps;
     if (!hasTypography) return;
 
-    const mixin = findTypographyMixin(typographyProps);
+    const mixins = findTypographyMixins(typographyProps);
 
-    if (!mixin) return;
+    if (!mixins || !mixins.length) return;
 
-    const exactMixin = Array.isArray(mixin) === false;
+    const exactMixin = mixins.length === 1;
 
     let fixed = false;
     if (context.fix && exactMixin) {
         fixed = true;
-        const { name, props } = mixin;
+        const { name, props } = mixins[0];
 
         const before = rule.nodes[0].raws.before;
         rule.walkDecls((decl) => {
@@ -124,13 +121,14 @@ const checkTypography = (rule, result, context, ruleName) => {
 
     const shouldReport =
         !fixed &&
-        (ruleName === RULE_USE_ONE_OF_MIXINS || (ruleName === RULE_USE_MIXINS && exactMixin));
+        ((ruleName === RULE_USE_ONE_OF_MIXINS && !exactMixin) ||
+            (ruleName === RULE_USE_MIXINS && exactMixin));
 
     if (shouldReport) {
         stylelint.utils.report({
             result,
             ruleName,
-            message: messages[ruleName].expected(mixin),
+            message: messages[ruleName].expected(mixins),
             node: rule,
             word: 'font-size',
             index: 0,

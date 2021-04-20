@@ -147,7 +147,7 @@ function findInValue(haystack, needle, fromIndex) {
     );
 }
 
-function choiceVar(variables, prop, group) {
+function choiceVars(variables, prop, group) {
     if (group === 'colors') {
         const colorVariants = () => {
             switch (prop) {
@@ -172,37 +172,36 @@ function choiceVar(variables, prop, group) {
         const condition = (variable) =>
             variants.some((variant) => variable.startsWith(`--color-light-${variant}`));
 
-        const result = sortVarsByUsage(variables, variants).filter(condition);
-
-        return result.length <= 1 ? result[0] : result;
+        return sortVarsByUsage(variables, variants).filter(condition);
     }
 
-    return variables[0];
+    return variables;
 }
 
-function findVar(cssValue, prop) {
+function findVars(cssValue, prop) {
     const vars = varsByProperties[prop];
     if (!vars) return;
 
     const group = getVarsGroup(vars);
 
     for (const [value, variables] of Object.entries(vars)) {
-        const variable = choiceVar(variables, prop, group);
+        const chosen = choiceVars(variables, prop, group);
 
-        if (!variable) continue;
+        if (!chosen || !chosen.length) continue;
 
         const index = findInValue(cssValue, value);
+
         if (index !== false) {
             return {
                 index,
                 value,
-                variable,
+                variables: chosen,
             };
         }
     }
 }
 
-function findTypographyMixin(ruleProps) {
+function findTypographyMixins(ruleProps) {
     const findMixin = (exact) => {
         return Object.entries(mixins.typography)
             .filter(([_, mixinProps]) => {
@@ -219,7 +218,7 @@ function findTypographyMixin(ruleProps) {
 
     const exact = findMixin(true);
     if (exact.length) {
-        return exact[0];
+        return exact;
     } else {
         const mixins = findMixin(false);
         return mixins.length > 0 ? mixins : null;
@@ -248,7 +247,7 @@ function sortVarsByUsage(arr, sortingArr) {
 module.exports.VARS_AVAILABLE = VARS_AVAILABLE;
 module.exports.vars = vars;
 module.exports.mixins = mixins;
-module.exports.findVar = findVar;
+module.exports.findVars = findVars;
 module.exports.formatVar = formatVar;
 module.exports.toOneLine = toOneLine;
-module.exports.findTypographyMixin = findTypographyMixin;
+module.exports.findTypographyMixins = findTypographyMixins;
