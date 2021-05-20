@@ -9,6 +9,7 @@ const RULE_USE_VARS = 'stylelint-core-vars/use-vars';
 const RULE_USE_ONE_OF_VARS = 'stylelint-core-vars/use-one-of-vars';
 const RULE_USE_MIXINS = 'stylelint-core-vars/use-mixins';
 const RULE_USE_ONE_OF_MIXINS = 'stylelint-core-vars/use-one-of-mixins';
+const RULE_DO_NOT_USE_DARK_COLORS = 'stylelint-core-vars/do-not-use-dark-colors';
 
 const messages = {
     [RULE_USE_VARS]: stylelint.utils.ruleMessages(RULE_USE_VARS, {
@@ -34,6 +35,11 @@ const messages = {
                 .map(({ name, props }) => `${name} (${Object.values(props).join('|')})`)
                 .join('\n');
             return `Use mixins instead of plain values:\n${mixinsPart}\n`;
+        },
+    }),
+    [RULE_DO_NOT_USE_DARK_COLORS]: stylelint.utils.ruleMessages(RULE_DO_NOT_USE_DARK_COLORS, {
+        expected: () => {
+            return 'Do not use dark colors directly. Only light and static colors are allowed';
         },
     }),
 };
@@ -136,6 +142,25 @@ const checkTypography = (rule, result, context, ruleName) => {
     }
 };
 
+const checkDarkColorsUsage = (decl, result, context, ruleName) => {
+    const { prop, raws } = decl;
+
+    let value = toOneLine(decl.value);
+
+    const matches = /--color-dark-[\w-]+/.exec(value);
+
+    if (matches) {
+        stylelint.utils.report({
+            result,
+            ruleName: RULE_DO_NOT_USE_DARK_COLORS,
+            message: messages[RULE_DO_NOT_USE_DARK_COLORS].expected(),
+            node: decl,
+            word: value,
+            index: prop.length + raws.between.length + decl.value.indexOf(matches[0]),
+        });
+    }
+};
+
 module.exports = [
     stylelint.createPlugin(RULE_USE_VARS, (enabled, _, context) => {
         if (!enabled || !VARS_AVAILABLE) {
@@ -185,6 +210,19 @@ module.exports = [
             });
         };
     }),
+    stylelint.createPlugin(RULE_DO_NOT_USE_DARK_COLORS, (enabled, _, context) => {
+        if (!enabled || !VARS_AVAILABLE) {
+            return () => {};
+        }
+
+        return (root, result) => {
+            root.walkRules((rule) => {
+                rule.walkDecls((decl) => {
+                    checkDarkColorsUsage(decl, result, context);
+                });
+            });
+        };
+    }),
 ];
 
 module.exports.messages = messages;
@@ -192,3 +230,4 @@ module.exports.RULE_USE_VARS = RULE_USE_VARS;
 module.exports.RULE_USE_ONE_OF_VARS = RULE_USE_ONE_OF_VARS;
 module.exports.RULE_USE_MIXINS = RULE_USE_MIXINS;
 module.exports.RULE_USE_ONE_OF_MIXINS = RULE_USE_ONE_OF_MIXINS;
+module.exports.RULE_DO_NOT_USE_DARK_COLORS = RULE_DO_NOT_USE_DARK_COLORS;

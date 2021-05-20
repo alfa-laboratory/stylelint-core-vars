@@ -39,6 +39,12 @@ npm install --save-dev stylelint stylelint-core-vars
           {
               "severity": "warning"
           }
+      ],
+      "stylelint-core-vars/do-not-use-dark-colors": [
+          true,
+          {
+              "severity": "warning"
+          }
       ]
   },
 }
