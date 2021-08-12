@@ -168,10 +168,8 @@ module.exports = [
         }
 
         return (root, result) => {
-            root.walkRules((rule) => {
-                rule.walkDecls((decl) => {
-                    checkVars(decl, result, context, RULE_USE_VARS);
-                });
+            root.walkDecls((decl) => {
+                checkVars(decl, result, context, RULE_USE_VARS);
             });
         };
     }),
@@ -181,10 +179,8 @@ module.exports = [
         }
 
         return (root, result) => {
-            root.walkRules((rule) => {
-                rule.walkDecls((decl) => {
-                    checkVars(decl, result, context, RULE_USE_ONE_OF_VARS);
-                });
+            root.walkDecls((decl) => {
+                checkVars(decl, result, context, RULE_USE_ONE_OF_VARS);
             });
         };
     }),
@@ -216,10 +212,8 @@ module.exports = [
         }
 
         return (root, result) => {
-            root.walkRules((rule) => {
-                rule.walkDecls((decl) => {
-                    checkDarkColorsUsage(decl, result, context);
-                });
+            root.walkDecls((decl) => {
+                checkDarkColorsUsage(decl, result, context);
             });
         };
     }),

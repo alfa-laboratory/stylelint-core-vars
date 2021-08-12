@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const CORE_COMPONENTS_PACKAGE = '@alfalab/core-components';
+const CORE_COMPONENTS_VARS_PACKAGE = '@alfalab/core-components-vars';
 const VAR_RE = /(?:^|\n)\s+(--[-\w]+):\s*([\s\S]+?);/gm;
 const MIXIN_RE = /@define-mixin (.*?) {(.*?)}/g;
 const BORDERS = {
@@ -45,14 +46,19 @@ const varsByProperties = {
     'border-radius': vars.borderRadiuses,
 };
 
-const VARS_AVAILABLE = coreComponentsInstalled() || runInsideCoreComponents();
+const VARS_AVAILABLE = Boolean(getInstalledVarsPackage()) || runInsideCoreComponents();
 
-function coreComponentsInstalled() {
+function getInstalledVarsPackage() {
     try {
         require.resolve(`${CORE_COMPONENTS_PACKAGE}/package.json`);
-        return true;
+        return CORE_COMPONENTS_PACKAGE;
     } catch (e) {
-        return false;
+        try {
+            require.resolve(`${CORE_COMPONENTS_VARS_PACKAGE}/package.json`);
+            return CORE_COMPONENTS_VARS_PACKAGE;
+        } catch (e) {
+            return false;
+        }
     }
 }
 
@@ -67,8 +73,14 @@ function runInsideCoreComponents() {
 }
 
 function resolveVarsFile(file) {
-    if (coreComponentsInstalled()) {
-        return fs.readFileSync(require.resolve(`${CORE_COMPONENTS_PACKAGE}/vars/${file}`));
+    const packageName = getInstalledVarsPackage();
+    if (packageName) {
+        const fullPath =
+            packageName === CORE_COMPONENTS_PACKAGE
+                ? `${packageName}/vars/${file}`
+                : `${packageName}/${file}`;
+
+        return fs.readFileSync(require.resolve(fullPath));
     } else {
         return fs.readFileSync(path.resolve(__dirname, `../../../packages/vars/src/${file}`));
     }
