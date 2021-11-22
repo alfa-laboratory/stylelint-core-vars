@@ -19,6 +19,12 @@ const vars = {
     borderRadiuses: loadVars('border-radius.css'),
 };
 
+const colorsSet = Object.values(vars.colors).reduce((acc, vars) => {
+    vars.forEach(colorVar => acc.add(colorVar));
+
+    return acc;
+}, new Set());
+
 const mixins = {
     typography: loadMixins('typography.css'),
 };
@@ -44,6 +50,10 @@ const varsByProperties = {
     'border-bottom': vars.colors,
     'border-left': vars.colors,
     'border-radius': vars.borderRadiuses,
+    'border-top-left-radius': vars.borderRadiuses,
+    'border-top-right-radius': vars.borderRadiuses,
+    'border-bottom-left-radius': vars.borderRadiuses,
+    'border-bottom-right-radius': vars.borderRadiuses,
 };
 
 const VARS_AVAILABLE = Boolean(getInstalledVarsPackage()) || runInsideCoreComponents();
@@ -258,6 +268,7 @@ function sortVarsByUsage(arr, sortingArr) {
 
 module.exports.VARS_AVAILABLE = VARS_AVAILABLE;
 module.exports.vars = vars;
+module.exports.colorsSet = colorsSet;
 module.exports.mixins = mixins;
 module.exports.findVars = findVars;
 module.exports.formatVar = formatVar;

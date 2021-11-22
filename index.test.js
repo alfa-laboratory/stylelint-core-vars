@@ -80,6 +80,10 @@ testRule({
                 border-radius: var(--border-radius-xl);
                 border-radius: var(--border-radius-circle);
                 border-radius: var(--border-radius-pill);
+                border-top-left-radius: var(--border-radius-s);
+                border-top-right-radius: var(--border-radius-s);
+                border-bottom-left-radius: var(--border-radius-s);
+                border-bottom-right-radius: var(--border-radius-s);
             }`,
             description: 'border-radius',
         },
@@ -215,12 +219,21 @@ testRule({
             ],
         },
         {
-            code: `.class {\n    border-radius: 8px;\n}`,
-            fixed: `.class {\n    border-radius: var(--border-radius-m);\n}`,
+            code: `.class {\n    border-radius: 8px;\n    border-top-left-radius: 4px;\n}`,
+            fixed: `.class {\n    border-radius: var(--border-radius-m);\n    border-top-left-radius: var(--border-radius-s);\n}`,
             description: 'hardcode border-radius',
-            message: messages[RULE_USE_VARS].expected(['--border-radius-m'], '8px'),
-            line: 2,
-            column: 20,
+            warnings: [
+                {
+                    message: messages[RULE_USE_VARS].expected(['--border-radius-m'], '8px'),
+                    line: 2,
+                    column: 20,
+                },
+                {
+                    message: messages[RULE_USE_VARS].expected(['--border-radius-s'], '4px'),
+                    line: 3,
+                    column: 29,
+                }
+            ]
         },
         ...Object.entries(vars.gaps).map(([value, vars]) => {
             const gapVar = vars[0];
@@ -339,6 +352,10 @@ testRule({
                 border-radius: var(--border-radius-xl);
                 border-radius: var(--border-radius-circle);
                 border-radius: var(--border-radius-pill);
+                border-top-left-radius: var(--border-radius-s);
+                border-top-right-radius: var(--border-radius-s);
+                border-bottom-left-radius: var(--border-radius-s);
+                border-bottom-right-radius: var(--border-radius-s);
             }`,
             description: 'border-radius',
         },
@@ -647,6 +664,12 @@ testRule({
                 border: 1px solid var(--color-light-border-primary);
             }`,
             description: 'allowed colors',
+        },
+        {
+            code: `.class {
+                color: var(--color-dark-indigo);
+            }`,
+            description: 'old colors',
         },
     ],
     reject: [

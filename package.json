@@ -1,6 +1,6 @@
 {
     "name": "@alfalab/stylelint-core-vars",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "description": "core-components css linter",
     "main": "index.js",
     "scripts": {

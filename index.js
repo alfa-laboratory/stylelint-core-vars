@@ -2,6 +2,7 @@ const stylelint = require('stylelint');
 const toOneLine = require('./utils').toOneLine;
 const formatVar = require('./utils').formatVar;
 const findVars = require('./utils').findVars;
+const colorsSet = require('./utils').colorsSet;
 const findTypographyMixins = require('./utils').findTypographyMixins;
 const VARS_AVAILABLE = require('./utils').VARS_AVAILABLE;
 
@@ -14,12 +15,12 @@ const RULE_DO_NOT_USE_DARK_COLORS = 'stylelint-core-vars/do-not-use-dark-colors'
 const messages = {
     [RULE_USE_VARS]: stylelint.utils.ruleMessages(RULE_USE_VARS, {
         expected: (variable, value) => {
-            return `Use variable '${variable}' instead of plain value '${value}'`;
+            return `Use variable 'var(${variable})' instead of plain value '${value}'`;
         },
     }),
     [RULE_USE_ONE_OF_VARS]: stylelint.utils.ruleMessages(RULE_USE_ONE_OF_VARS, {
         expected: (variables, value) => {
-            const variablesPart = variables.map((v) => `${v}`).join('\n');
+            const variablesPart = variables.map((v) => `var(${v})`).join('\n');
 
             return `Use variables instead of plain value '${value}':\n${variablesPart}\n`;
         },
@@ -149,7 +150,7 @@ const checkDarkColorsUsage = (decl, result, context, ruleName) => {
 
     const matches = /--color-dark-[\w-]+/.exec(value);
 
-    if (matches) {
+    if (matches && colorsSet.has(matches[0])) {
         stylelint.utils.report({
             result,
             ruleName: RULE_DO_NOT_USE_DARK_COLORS,
