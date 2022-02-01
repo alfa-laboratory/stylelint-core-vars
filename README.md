@@ -7,13 +7,13 @@
 ## Установка
 
 ```
-yarn add --dev stylelint stylelint-core-vars
+yarn add --dev stylelint @alfalab/stylelint-core-vars
 ```
 
 или
 
 ```
-npm install --save-dev stylelint stylelint-core-vars
+npm install --save-dev stylelint @alfalab/stylelint-core-vars
 ```
 
 ## Использование
